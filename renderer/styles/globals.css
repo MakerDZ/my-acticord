@@ -2,14 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply bg-gray-900 text-white;
-  }
+.hide-scrollbar {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
 }
 
-@layer components {
-  .btn-blue {
-    @apply text-white font-bold px-4 py-2 rounded bg-blue-600 hover:bg-blue-500;
-  }
+.hide-scrollbar::-webkit-scrollbar {
+    display: none; 
 }
