@@ -15,6 +15,15 @@ declare global {
                 channel: string,
                 callback: (...args: unknown[]) => void
             ) => () => void;
+            addProfile(clientID: string, userID: string): Promise<number>;
+            getProfiles(): Promise<any[]>;
+            getProfileById(id: number): Promise<any>;
+            updateProfile(
+                id: number,
+                clientID: string,
+                userID: string
+            ): Promise<boolean>;
+            deleteProfile(id: number): Promise<boolean>;
         };
     }
 }

@@ -1,10 +1,12 @@
 import path from 'path';
 import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
-import { createWindow } from './helpers';
 import DiscordRPC from 'discord-rpc';
+import { createWindow } from './helpers';
+import { setupDatabase } from './database';
+import { setupIpcHandlers } from './ipc-handlers';
 
-let RPC; // Initialize RPC outside to control its lifecycle
+let RPC;
 const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
@@ -15,6 +17,8 @@ if (isProd) {
 
 (async () => {
     await app.whenReady();
+    setupDatabase();
+    setupIpcHandlers();
 
     const mainWindow = createWindow('main', {
         width: 1000,
@@ -75,3 +79,4 @@ function stopRPC() {
             console.error('Error stopping RPC', err);
         });
 }
+

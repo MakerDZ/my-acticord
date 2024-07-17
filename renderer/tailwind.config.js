@@ -24,10 +24,12 @@ module.exports = {
                 'dark-dc-normal': '#303338',
                 'dark-dc-menu': '#111214',
                 'dark-dc-menu-text': '#B5BAC0',
+                'dark-dc-text': '#F2F3F5',
 
                 // Light theme colors
                 'light-dc-pirmary': '#E2E5E8',
                 'light-dc-secondary': '#F2F3F5',
+                'light-dc-menu-text': '#E2E5E8',
 
                 'dc-blue': '#5764F2',
             },

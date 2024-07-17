@@ -25,14 +25,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     return (
         <html lang="en" className={theme}>
-            <body>
-                <Navigation />
-                <NextUIProvider>
-                    <main className="dark:bg-dark-dc-secondary w-full h-screen bg-light-dc-secondary">
+            <NextUIProvider>
+                <body className="w-full h-screen dark:bg-dark-dc-secondary  bg-light-dc-secondary flex flex-col">
+                    <Navigation />
+                    <main className="flex-1">
                         <Component {...pageProps} />
                     </main>
-                </NextUIProvider>
-            </body>
+                </body>
+            </NextUIProvider>
         </html>
     );
 }

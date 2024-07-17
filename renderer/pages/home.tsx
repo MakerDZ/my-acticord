@@ -1,5 +1,8 @@
 import React from 'react';
 import Head from 'next/head';
+import ProfileCard from '../components/ProfileConnection/ProfileCard';
+import CustomActivityForm from '../components/ProfileConnection/CustomActivityForm';
+import GoLive from '../components/ProfileConnection/GoLive';
 
 function Home() {
     const startServer = () => {
@@ -22,20 +25,15 @@ function Home() {
             <Head>
                 <title>My Acticord</title>
             </Head>
-            {/* <div className="flex flex-col space-y-2 w-[150px] ">
-                <button
-                    className="bg-blue-500 px-2 py-1 rounded-lg text-white"
-                    onClick={startServer}
-                >
-                    Start Server
-                </button>
-                <button
-                    className="bg-blue-500 px-2 py-1 rounded-lg text-white"
-                    onClick={stopServer}
-                >
-                    Stop Server
-                </button>
-            </div> */}
+            <div className="max-w-[1000px] h-full mx-auto  flex flex-col justify-center">
+                <div className="flex flex-row justify-around overflow-y-auto py-9 dark:bg-dark-dc-secondary  bg-light-dc-secondary">
+                    <CustomActivityForm />
+                    <div className="space-y-4">
+                        <ProfileCard />
+                        <GoLive />
+                    </div>
+                </div>
+            </div>
         </React.Fragment>
     );
 }
