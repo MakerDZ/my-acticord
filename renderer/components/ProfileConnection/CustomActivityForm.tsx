@@ -5,6 +5,7 @@ import useActivityFormStore from '../../store/activityForm.store';
 function CustomActivityForm() {
     const { register, handleSubmit, watch } = useForm();
     const updateField = useActivityFormStore((state) => state.updateField);
+    const { formData } = useActivityFormStore();
 
     useEffect(() => {
         const subscription = watch((value, { name }) => {
@@ -22,6 +23,7 @@ function CustomActivityForm() {
                     Details
                 </p>
                 <input
+                    defaultValue={formData.details}
                     {...register('details')}
                     className="w-full outline-none px-3 rounded-md py-[10px] text-sm dark:text-dark-dc-menu-text dark:bg-dark-dc-primary bg-light-dc-menu-text"
                     type="text"
@@ -33,6 +35,7 @@ function CustomActivityForm() {
                     State
                 </p>
                 <input
+                    defaultValue={formData.state}
                     {...register('state')}
                     className="w-full outline-none px-3 rounded-md py-[10px] text-sm dark:text-dark-dc-menu-text dark:bg-dark-dc-primary bg-light-dc-menu-text"
                     type="text"
@@ -46,6 +49,7 @@ function CustomActivityForm() {
                     Large Image Key
                 </p>
                 <input
+                    defaultValue={formData.large_image_key}
                     {...register('large_image_key')}
                     className="w-full outline-none px-3 rounded-md py-[10px] text-sm dark:text-dark-dc-menu-text dark:bg-dark-dc-primary bg-light-dc-menu-text"
                     type="text"
@@ -57,6 +61,7 @@ function CustomActivityForm() {
                     Large Image Text
                 </p>
                 <input
+                    defaultValue={formData.large_image_text}
                     {...register('large_image_text')}
                     className="w-full outline-none px-3 rounded-md py-[10px] text-sm dark:text-dark-dc-menu-text dark:bg-dark-dc-primary bg-light-dc-menu-text"
                     type="text"
@@ -70,6 +75,7 @@ function CustomActivityForm() {
                     Small Image Key
                 </p>
                 <input
+                    defaultValue={formData.small_image_key}
                     {...register('small_image_key')}
                     className="w-full outline-none px-3 rounded-md py-[10px] text-sm dark:text-dark-dc-menu-text dark:bg-dark-dc-primary bg-light-dc-menu-text"
                     type="text"
@@ -81,6 +87,7 @@ function CustomActivityForm() {
                     Small Image Text
                 </p>
                 <input
+                    defaultValue={formData.small_image_text}
                     {...register('small_image_text')}
                     className="w-full outline-none px-3 rounded-md py-[10px] text-sm dark:text-dark-dc-menu-text dark:bg-dark-dc-primary bg-light-dc-menu-text"
                     type="text"

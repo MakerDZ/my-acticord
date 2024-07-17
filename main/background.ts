@@ -5,6 +5,7 @@ import DiscordRPC from 'discord-rpc';
 import { createWindow } from './helpers';
 import { setupDatabase } from './database';
 import { setupIpcHandlers } from './ipc-handlers';
+import { BrowserWindow } from 'electron';
 
 let RPC;
 const isProd = process.env.NODE_ENV === 'production';
@@ -17,12 +18,15 @@ if (isProd) {
 
 (async () => {
     await app.whenReady();
-    setupDatabase();
-    setupIpcHandlers();
+
+    /* In a future update, I want to allow people to track their activities locally. That's why there is a local database. */
+
+    //setupDatabase();
+    //setupIpcHandlers();
 
     const mainWindow = createWindow('main', {
         width: 1000,
-        height: 600,
+        height: 650,
         minWidth: 850,
         minHeight: 600,
         webPreferences: {
@@ -39,11 +43,15 @@ if (isProd) {
     }
 
     ipcMain.on('start-rpc', (ctx, data) => {
-        startRPC();
+        startRPC(data);
     });
 
     ipcMain.on('stop-rpc', () => {
         stopRPC();
+    });
+
+    ipcMain.on('test-rpc', (ctx, data) => {
+        testRPC(data.clientId);
     });
 })();
 
@@ -51,17 +59,47 @@ app.on('window-all-closed', () => {
     app.quit();
 });
 
-ipcMain.on('message', async (event, arg) => {
-    event.reply('message', `${arg} World!`);
-});
+async function testRPC(clientId: string) {
+    const testRPC = new DiscordRPC.Client({ transport: 'ipc' });
+    DiscordRPC.register(clientId);
+    testRPC
+        .login({ clientId })
+        .then(async () => {
+            const windows = BrowserWindow.getAllWindows();
+            windows.forEach((win) => {
+                win.webContents.send('rpc-validation', { success: true });
+            });
+            console.log('clientID is valid.');
+            testRPC
+                .destroy()
+                .then(() => {
+                    RPC = null;
+                    console.log('RPC stopped');
+                })
+                .catch((err) => {
+                    console.error('Error stopping RPC', err);
+                });
+        })
+        .catch((err) => {
+            console.log(err);
+            const windows = BrowserWindow.getAllWindows();
+            windows.forEach((win) => {
+                win.webContents.send('rpc-validation', {
+                    success: false,
+                    error: err.message,
+                });
+            });
+        });
+}
 
-function startRPC() {
+function startRPC(data: any) {
     if (RPC) {
-        console.log('RPC already started');
+        RPC.destroy().then(() => {
+            emitRPC(data);
+        });
         return;
     }
-
-    RPC = new DiscordRPC.Client({ transport: 'ipc' });
+    emitRPC(data);
 }
 
 function stopRPC() {
@@ -79,4 +117,41 @@ function stopRPC() {
             console.error('Error stopping RPC', err);
         });
 }
+
+function emitRPC(data: any) {
+    RPC = new DiscordRPC.Client({ transport: 'ipc' });
+    DiscordRPC.register(data.clientID);
+    RPC.on('ready', async () => {
+        console.log('RPC is ready.');
+        RPC.setActivity({
+            details:
+                data.details && data.details.length >= 2
+                    ? data.details
+                    : `ㅤㅤ`,
+            state: data.state && data.state.length >= 2 ? data.state : `ㅤㅤ`,
+            startTimestamp: Date.now(),
+            largeImageKey:
+                data.large_image_key && data.large_image_key.length >= 2
+                    ? data.large_image_key
+                    : `ㅤㅤ`,
+            largeImageText:
+                data.large_image_text && data.large_image_text.length >= 2
+                    ? data.large_image_text
+                    : `ㅤㅤ`,
+            smallImageKey:
+                data.small_image_key && data.small_image_key.length >= 2
+                    ? data.small_image_key
+                    : `ㅤㅤ`,
+            smallImageText:
+                data.small_image_text && data.small_image_text.length >= 2
+                    ? data.small_image_text
+                    : `ㅤㅤ`,
+            instance: false,
+        });
+    });
+
+    RPC.login({ clientId: data.clientID }).catch((err) => console.log(err));
+}
+    
+  
 

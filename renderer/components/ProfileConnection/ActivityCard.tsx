@@ -8,7 +8,7 @@ function ActivityCard() {
 
     return (
         <div className="w-full dark:bg-dark-dc-secondary bg-light-dc-secondary rounded-lg p-3 space-y-2">
-            <p className="text-[13px] font-semibold dark:text-dark-dc-text ">
+            <p className="text-[12px] font-semibold dark:text-dark-dc-text ">
                 Playing a game
             </p>
             <div className="flex flex-row justify-start space-x-2">

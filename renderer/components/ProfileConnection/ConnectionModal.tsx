@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Modal,
     ModalContent,
@@ -6,9 +6,17 @@ import {
     ModalBody,
     ModalFooter,
 } from '@nextui-org/modal';
-import { getProfiles } from '../../utils/database/ipc';
 import useThemeStore from '../../store/theme.store';
 import { Button } from '@nextui-org/react';
+import useConnectionStore from '../../store/connection.store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import {
+    makeConnection,
+    TypeMakeConnectionSchema,
+} from '../../validation/connection.validation';
+import { Spinner } from '@nextui-org/spinner';
+import { useQueryClient } from '@tanstack/react-query';
 
 type ConnectionModalProp = {
     isOpen: any;
@@ -21,16 +29,61 @@ function ConnectionModal({
     onOpenChange,
     onClose,
 }: ConnectionModalProp) {
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { isValid },
+    } = useForm<TypeMakeConnectionSchema>({
+        resolver: zodResolver(makeConnection),
+    });
     const { theme } = useThemeStore();
+    const { updateDisplay, updateConnection, connection } =
+        useConnectionStore();
+
+    const [rpcError, setRPCError] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const queryClient = useQueryClient();
 
     useEffect(() => {
-        loadProfiles();
+        const unsubscribe = window.ipc.on('rpc-validation', (message: any) => {
+            if (message.success) {
+                //close the form
+
+                setLoading(false);
+                setRPCError(false);
+                updateDisplay(true);
+                onClose();
+            } else {
+                //show the error message
+                setLoading(false);
+                setRPCError(true);
+                updateDisplay(false);
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
     }, []);
 
-    async function loadProfiles() {
-        const fetchedProfiles = await getProfiles();
-        console.log(fetchedProfiles);
-    }
+    const handleConnection = handleSubmit((data) => {
+        updateConnection('userID', data.userID);
+        if (data.clientID != connection.clientID) {
+            setLoading(true);
+            updateConnection('clientID', data.clientID);
+
+            if (window.ipc) {
+                window.ipc.send('test-rpc', {
+                    clientId: data.clientID,
+                });
+            }
+        } else {
+            queryClient.invalidateQueries({ queryKey: ['profileData'] });
+            onClose();
+        }
+    });
 
     return (
         <Modal
@@ -59,9 +112,16 @@ function ConnectionModal({
                                 <p
                                     className={`text-xs mb-[5px] font-extrabold ${theme == 'dark' ? 'text-dark-dc-menu-text' : ''} `}
                                 >
-                                    ClientID
+                                    Bot ClientID
+                                    {rpcError ? (
+                                        <span className="text-red-500">{` *Invalid`}</span>
+                                    ) : (
+                                        ''
+                                    )}
                                 </p>
                                 <input
+                                    defaultValue={connection.clientID}
+                                    {...register('clientID')}
                                     className={`w-full  outline-none px-3 rounded-md py-[10px] text-sm ${theme == 'dark' ? 'text-dark-dc-menu-text bg-dark-dc-primary' : 'bg-light-dc-menu-text'} `}
                                     type="text"
                                 />
@@ -71,9 +131,11 @@ function ConnectionModal({
                                 <p
                                     className={`text-xs mb-[5px] font-extrabold ${theme == 'dark' ? 'text-dark-dc-menu-text' : ''} `}
                                 >
-                                    UserID
+                                    Discord UserID (Optional)
                                 </p>
                                 <input
+                                    defaultValue={connection.userID}
+                                    {...register('userID')}
                                     className={`w-full  outline-none px-3 rounded-md py-[10px] text-sm ${theme == 'dark' ? 'text-dark-dc-menu-text bg-dark-dc-primary' : 'bg-light-dc-menu-text'} `}
                                     type="text"
                                 />
@@ -82,8 +144,16 @@ function ConnectionModal({
                         <ModalFooter
                             className={`${theme == 'dark' ? 'bg-dark-dc-secondary' : 'bg-light-dc-secondary'}`}
                         >
-                            <Button className="bg-dc-blue text-white">
-                                Save
+                            <Button
+                                disabled={!isValid || loading}
+                                onClick={handleConnection}
+                                className={`bg-dc-blue text-white ${isValid || !loading ? '' : 'opacity-75'}`}
+                            >
+                                {loading ? (
+                                    <Spinner size="sm" color="default" />
+                                ) : (
+                                    'Connect'
+                                )}
                             </Button>
                         </ModalFooter>
                     </>
