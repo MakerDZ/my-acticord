@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useActivityFormStore from '../../store/activityForm.store';
+import ElapsedTimeCounter from './ElapsedTimeCounter';
 
 function ActivityCard() {
     const { formData } = useActivityFormStore();
@@ -44,7 +45,7 @@ function ActivityCard() {
                         {formData.state}
                     </p>
                     <p className="dark:text-dark-dc-menu-text text-xs">
-                        00:00 elapsed
+                        <ElapsedTimeCounter />
                     </p>
                 </div>
             </div>
