@@ -3,8 +3,8 @@ import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
 import DiscordRPC from 'discord-rpc';
 import { createWindow } from './helpers';
-import { setupDatabase } from './database';
-import { setupIpcHandlers } from './ipc-handlers';
+// import { setupDatabase } from './database';
+// import { setupIpcHandlers } from './ipc-handlers';
 import { BrowserWindow } from 'electron';
 
 let RPC;
@@ -26,7 +26,7 @@ if (isProd) {
 
     const mainWindow = createWindow('main', {
         width: 1000,
-        height: 650,
+        height: 730,
         minWidth: 850,
         minHeight: 600,
         webPreferences: {

@@ -1,6 +1,6 @@
-appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+appId: com.acticord
+productName: My Acticord
+copyright: Copyright © 2024 zed
 npmRebuild: true
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/

@@ -6,7 +6,6 @@ const useProfileData = () => {
     const userId = connection.userID;
 
     const goalQuery = async () => {
-        console.log(userId);
         if (userId == '' || userId == undefined) {
             return null;
         }
